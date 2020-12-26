@@ -124,7 +124,7 @@ let scoreResult (scoreType: ScoreType) (dice: list<DiceSide>) =
         let diffIsZero =
             List.zip (sortedDice |> List.take 4) (sortedDice |> List.skip 1)
             |> List.map (fun (x, y) -> x - y)
-            |> List.forall (fun dx -> dx = 0)
+            |> List.forall (fun dx -> dx = 1)
         if diffIsZero && sortedDice.[0] = int(DiceSide.Five) && sortedDice.[^1] = int(DiceSide.One) then
             MinorStraight
         else
