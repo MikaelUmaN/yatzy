@@ -24,7 +24,9 @@ let countSide (d: DiceSide) (dice: list<DiceSide>) =
 
 let scoreCountSide (d: DiceSide) (dice: list<DiceSide>) =
     let cnt = countSide d dice
-    Multiple(d, cnt |> enum<MultipleInstance>)
+    match cnt with
+    | c when c = 0 -> Miss
+    | _ -> Number(d, cnt |> enum<DiceSideInstances>)
 
 let countMultiple (m: MultipleInstance) (dice: list<DiceSide>) (d: DiceSide) =
     let cnt = countSide d dice
