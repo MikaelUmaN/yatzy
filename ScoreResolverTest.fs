@@ -49,3 +49,18 @@ module ``Score Resolution Tests``
     let ``When scoring an actual minor stragight we receive the score`` () =
         let r = scoreResult ScoreType.MinorStraight [DiceSide.One; DiceSide.Five; DiceSide.Four; DiceSide.Three; DiceSide.Two]
         r |> should equal (MinorStraight)
+
+    [<Fact>]
+    let ``When scoring a mix the result is just a mix`` () =
+        let r = scoreResult ScoreType.Mix [DiceSide.One; DiceSide.Five; DiceSide.Four; DiceSide.Three; DiceSide.One]
+        r |> should equal (Mix(DiceSide.One, DiceSide.Five, DiceSide.Four, DiceSide.Three, DiceSide.One))
+
+    [<Fact>]
+    let ``When scoring a yatzy that is actual the result is always yatzy`` () =
+        let r = scoreResult ScoreType.Yatzy [DiceSide.One; DiceSide.One; DiceSide.One; DiceSide.One; DiceSide.One]
+        r |> should equal (Yatzy)
+
+    [<Fact>]
+    let ``When scoring a yatzy that is not really a yatzy the result is always a Miss`` () =
+        let r = scoreResult ScoreType.Yatzy [DiceSide.Two; DiceSide.One; DiceSide.One; DiceSide.One; DiceSide.One]
+        r |> should equal (Miss)

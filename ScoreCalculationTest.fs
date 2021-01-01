@@ -34,3 +34,15 @@ module ``Score Calculation Tests``
         let r = FullHouse(DiceSide.Six, DiceSide.One)
         let s = calculateSingleScore r
         s |> should equal 20
+
+    [<Fact>]
+    let ``When scoring a mix the result is just the sum of the dices`` () =
+        let r = Mix(DiceSide.Six, DiceSide.One, DiceSide.Five, DiceSide.Four, DiceSide.Four)
+        let s = calculateSingleScore r
+        s |> should equal (6+1+5+4+4)
+
+    [<Fact>]
+    let ``When scoring a yatzy the result is always 50`` () =
+        let r = Yatzy
+        let s = calculateSingleScore r
+        s |> should equal 50
