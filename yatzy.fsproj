@@ -8,6 +8,7 @@
     <Compile Include="State.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Test.fs" />
+    <Compile Include="TestScoreResolver.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
