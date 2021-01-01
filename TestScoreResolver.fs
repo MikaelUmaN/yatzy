@@ -34,3 +34,18 @@ module ``Score Resolution Tests``
     let ``When scoring a full house sixes full of ones the score is a full house`` () =
         let r = scoreResult ScoreType.FullHouse [DiceSide.Six; DiceSide.One; DiceSide.Six; DiceSide.One; DiceSide.Six]
         r |> should equal (FullHouse(DiceSide.Six, DiceSide.One))
+
+    [<Fact>]
+    let ``When scoring a mix as a straight we record a miss`` () =
+        let r = scoreResult ScoreType.MajorStraight [DiceSide.Six; DiceSide.One; DiceSide.Three; DiceSide.Four; DiceSide.Six]
+        r |> should equal (Miss)
+
+    [<Fact>]
+    let ``When scoring an actual stragight we receive the score`` () =
+        let r = scoreResult ScoreType.MajorStraight [DiceSide.Six; DiceSide.Five; DiceSide.Four; DiceSide.Three; DiceSide.Two]
+        r |> should equal (MajorStraight)
+
+    [<Fact>]
+    let ``When scoring an actual minor stragight we receive the score`` () =
+        let r = scoreResult ScoreType.MinorStraight [DiceSide.One; DiceSide.Five; DiceSide.Four; DiceSide.Three; DiceSide.Two]
+        r |> should equal (MinorStraight)

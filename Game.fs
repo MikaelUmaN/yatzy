@@ -123,11 +123,11 @@ let scoreResult (scoreType: ScoreType) (dice: list<DiceSide>) =
             |> List.map int
             |> List.sortDescending
             
-        let diffIsZero =
+        let diffIsOne =
             List.zip (sortedDice |> List.take 4) (sortedDice |> List.skip 1)
             |> List.map (fun (x, y) -> x - y)
             |> List.forall (fun dx -> dx = 1)
-        if diffIsZero && sortedDice.[0] = int(DiceSide.Five) && sortedDice.[^1] = int(DiceSide.One) then
+        if diffIsOne && sortedDice.[0] = int(DiceSide.Five) && sortedDice.[^0] = int(DiceSide.One) then
             MinorStraight
         else
             Miss
@@ -137,11 +137,11 @@ let scoreResult (scoreType: ScoreType) (dice: list<DiceSide>) =
             |> List.map int
             |> List.sortDescending
             
-        let diffIsZero =
+        let diffIsOne =
             List.zip (sortedDice |> List.take 4) (sortedDice |> List.skip 1)
             |> List.map (fun (x, y) -> x - y)
             |> List.forall (fun dx -> dx = 1)
-        if diffIsZero && sortedDice.[0] = int(DiceSide.Six) && sortedDice.[^1] = int(DiceSide.Two) then
+        if diffIsOne && sortedDice.[0] = int(DiceSide.Six) && sortedDice.[^0] = int(DiceSide.Two) then
             MajorStraight
         else
             Miss
