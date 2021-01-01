@@ -162,22 +162,24 @@ let scoreResult (scoreType: ScoreType) (dice: list<DiceSide>) =
             Miss
     | _ -> failwith $"Unknown score type: {scoreType}"
 
+let calculateSingleScore v =
+    match v with
+    | Miss -> 0
+    | Number(s, i) -> int(s) * int(i)
+    | Multiple(s, i) -> int(s) * int(i)
+    | TwoPairs(s1, s2) -> 2 * int(s1) + 2 * int(s2) 
+    | FullHouse(s1, s2) -> 3 * int(s1) + 2 * int(s2)
+    | MinorStraight -> 15
+    | MajorStraight -> 20
+    | Mix(s1, s2, s3, s4, s5) -> int(s1) + int(s2) + int(s3) + int(s4) + int(s5)
+    | Yatzy -> 50
+
 let calculateScore playerState =
     let (PlayerState (_, scores)) = playerState
     
     let sumScores =
         scores
-        |> Map.map (fun k v ->
-            match v with
-            | Miss -> 0
-            | Number(s, i) -> int(s) * int(i)
-            | Multiple(s, i) -> int(s) * int(i)
-            | TwoPairs(s1, s2) -> 2 * int(s1) + 2 * int(s2) 
-            | FullHouse(s1, s2) -> 3 * int(s1) + 2 * int(s2)
-            | MinorStraight -> 15
-            | MajorStraight -> 20
-            | Mix(s1, s2, s3, s4, s5) -> int(s1) + int(s2) + int(s3) + int(s4) + int(s5)
-            | Yatzy -> 50)
+        |> Map.map (fun _ v -> calculateSingleScore v)
         |> Map.toList
         |> List.sumBy snd
 
