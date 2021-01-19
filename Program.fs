@@ -1,6 +1,7 @@
 open System
 open State
 open Game
+open Player
 
 [<EntryPoint>]
 let main argv =
@@ -15,26 +16,35 @@ let main argv =
             let nPlayers = Console.ReadLine() |> int       
             printfn $"Starting a yatzy game with {nPlayers} players!"
             printfn "" // Prettier output
-            game PlayerNames (Game (nPlayers, [], Map.empty))
-        | PlayerNames ->
+            game PlayerLogic (Game (nPlayers, [], Map.empty))
+        | PlayerLogic ->
             match gameState with
             | Game (nPlayers, _, _) ->
-                let playerNames = 
+                let players = 
                     [for i in 1..nPlayers ->  
                         printf $"Enter name of player {i}: "
-                        Console.ReadLine()]
+                        let name = Console.ReadLine()
+                        printfn ""
+                        printf $"Enter type of player {name} (Human, Computer): "
+                        let playerType = Enum.Parse<PlayerType>(Console.ReadLine())
+                        let playerLogic =
+                            match playerType with
+                            | PlayerType.Human -> makeHumanTerminalPlayer name
+                            | PlayerType.Computer -> makeHumanTerminalPlayer name // TODO: Implement computer player.
+                            | _ -> failwith $"Invalid value for player type: {playerType}"
+                        playerLogic]
                 printfn "" // Prettier output
                 
                 let initialStates = 
-                    playerNames 
-                    |> List.map (fun p -> p, initPlayerState) 
+                    players 
+                    |> List.map (fun p -> p.Name, initPlayerState) 
                     |> Map.ofList
-                game Playing (Game (nPlayers, playerNames, initialStates))
+                game Playing (Game (nPlayers, players, initialStates))
             | _ -> failwith "Inconsistent state"
         | Playing ->
-            let playerTurn player playerState =
+            let playerTurn (player: IPlayer) playerState =
                 printfn $"{hLine}"
-                printfn $"Player: {player}"
+                printfn $"Player: {player.Name}"
                 printfn $"{hLine}"
 
                 let availableScoreTypes = 
@@ -135,7 +145,7 @@ let main argv =
                 printfn ""
                 let newPlayerStates =
                     players 
-                    |> List.map (fun p -> (p, playerTurn p playerStates.[p]))
+                    |> List.map (fun p -> (p.Name, playerTurn p playerStates.[p.Name]))
                     |> Map.ofList
                 let newGameState = Game(nPlayers, players, newPlayerStates)
                 

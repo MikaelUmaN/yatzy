@@ -2,7 +2,7 @@ module State
 
 type ApplicationState =
     | NrPlayers
-    | PlayerNames
+    | PlayerLogic
     | Playing
     | GameFinished
 
@@ -57,6 +57,24 @@ type ScoreResult =
 
 type PlayerStateDef = PlayerState of RemainingScoreTypes: List<ScoreType> * Scores: Map<ScoreType, ScoreResult>
 
+/// A player is either a human or a computer
+type PlayerType =
+    | Human = 1
+    | Computer = 2
+
+/// A player takes decisions on what dice to keep and what score to assign.
+type IPlayer =
+
+    /// The name of the player
+    abstract member Name: string
+
+    /// Given state, remaining number of throws and current dices, returns the set of dices to keep.
+    /// May be equal to or less than the input dices - but never more.
+    abstract member Act: playerState:PlayerStateDef -> dice:list<DiceSide> -> nRemaining:int -> list<DiceSide>
+
+    /// Given state, and dice result, selects a score type
+    abstract member SelectScore: playerState:PlayerStateDef -> dice:list<DiceSide> -> ScoreType
+
 type GameState =
     | Empty
-    | Game of NPlayers: int * Players: List<string> * PlayerStates: Map<string, PlayerStateDef>
+    | Game of NPlayers: int * Players: List<IPlayer> * PlayerStates: Map<string, PlayerStateDef>
