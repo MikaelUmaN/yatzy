@@ -1,11 +1,5 @@
 module State
 
-type ApplicationState =
-    | NrPlayers
-    | PlayerLogic
-    | Playing
-    | GameFinished
-
 type ScoreType =
     | Ones = 1
     | Twos = 2
@@ -77,4 +71,23 @@ type IPlayer =
 
 type GameState =
     | Empty
-    | Game of NPlayers: int * Players: List<IPlayer> * PlayerStates: Map<string, PlayerStateDef>
+    | Game of Players: List<IPlayer> * PlayerStates: Map<string, PlayerStateDef>
+
+/// State of the application.
+type ApplicationState =
+| PlayerSetup
+| Playing
+| GameFinished
+
+/// Abstraction for the game of yatzy, from player setup to game finish.
+type IYatzy =
+
+    /// Determines players and player logic.
+    abstract member DeterminePlayers: List<IPlayer>
+
+    /// Plays a player turn of the game.
+    abstract member PlayerTurn: IPlayer -> PlayerStateDef -> PlayerStateDef
+
+    /// Convenience function to perform any kind of clean-up or analysis 
+    /// when the game is over.
+    abstract member GameFinished: GameState -> GameState
