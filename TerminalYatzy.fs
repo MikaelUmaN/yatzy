@@ -5,6 +5,7 @@ open System
 open State
 open Game
 open Player
+open GreedyComputerPlayer
 
 let makeTerminalYatzyImpl =
     { new IYatzy with
@@ -25,9 +26,9 @@ let makeTerminalYatzyImpl =
                     let playerLogic =
                         match playerType with
                         | PlayerType.Human -> makeHumanTerminalPlayer name
-                        | PlayerType.Computer -> makeHumanTerminalPlayer name // TODO: Implement computer player.
+                        | PlayerType.Computer -> makeNaiveGreedyComputerPlayer name // TODO: Implement computer player.
                         | _ -> failwith $"Invalid value for player type: {playerType}"
-                    playerLogic]
+                    makeLegalPlayer playerLogic 2]
             players
 
         override _.PlayerTurn player playerState: PlayerStateDef = 
@@ -46,43 +47,19 @@ let makeTerminalYatzyImpl =
                 let rec diceThrow nRemaining (dice: list<DiceSide>) =
                     let nThrowDice = ndice - List.length dice
                     let newdice = castDice nThrowDice
-                    let currentdice = List.concat [dice; newdice]
+                    let currentDice = List.concat [dice; newdice]
                     printfn "" // Prettier output
                     printfn $"Throw: {diceStr newdice}"
                     if nRemaining = 0 then
-                        printfn $"Final dice: {diceStr currentdice}"
+                        printfn $"Final dice: {diceStr currentDice}"
                         printfn "" // Prettier output
-                        currentdice
+                        currentDice
                     else
-                        printfn $"Current dice: {diceStr currentdice}"
+                        printfn $"Current dice: {diceStr currentDice}"
                         printfn "" // Prettier output
 
-                        let rec keepdiceChoice currentdice =
-                            printf "Write values of dice to keep: "
-                            let keepdice =
-                                try
-                                    List.map (int >> enum<DiceSide>) (Console.ReadLine().Split(' ') 
-                                    |> Array.toList)
-                                with
-                                | _ -> []
-                            let hasKeepdice =
-                                keepdice
-                                |> List.groupBy id
-                                |> List.forall (fun (d, ds) -> 
-                                    let groupedCurrentdice =
-                                        currentdice 
-                                        |> List.groupBy id
-                                        |> Map.ofList
-                                    groupedCurrentdice.ContainsKey d && groupedCurrentdice.[d].Length >= ds.Length)
-                            if not hasKeepdice then
-                                printfn "" // Prettier output
-                                printfn "You do not have those dice!"
-                                printfn "" // Prettier output
-                                keepdiceChoice currentdice
-                            else
-                                keepdice
-                        let chosendice = keepdiceChoice currentdice
-                        diceThrow (nRemaining-1) chosendice
+                        let chosenDice = player.Act playerState currentDice nRemaining
+                        diceThrow (nRemaining-1) chosenDice
                 
                 // Complete throws
                 let dice = diceThrow 2 []
@@ -90,31 +67,8 @@ let makeTerminalYatzyImpl =
                 let rec selectScore dice (playerState: PlayerStateDef) =
                     match playerState with
                     | PlayerState (remainingScoreTypes, scores) ->
-                        printfn "Select score by writing the name, available scores:"
-                        printfn ""
-                        printfn $"{availableScoreTypes}"
-                        printfn ""
-                        
-                        printf "Score: "
-                        let score = Console.ReadLine()
-                        try
-                            let selectedScore = Enum.Parse<ScoreType>(score)
-                            let foundSelectedScore = 
-                                remainingScoreTypes 
-                                |> List.tryFind (fun s -> s = selectedScore)
-                            match foundSelectedScore with
-                            | Some(s) -> 
-                                printfn ""
-                                s
-                            | None ->
-                                printfn "That score type is not available"
-                                printfn ""
-                                selectScore dice playerState
-                        with
-                            | _ ->
-                                printfn "Incorrect score type"
-                                printfn ""
-                                selectScore dice playerState
+                        let selectedScore = player.SelectScore playerState dice
+                        selectedScore
                 
                 // Select score and update state.
                 let selectedScore = selectScore dice playerState

@@ -8,6 +8,7 @@
     <Compile Include="State.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Player.fs" />
+    <Compile Include="GreedyComputerPlayer.fs" />
     <Compile Include="TerminalYatzy.fs" />
     <Compile Include="ScoreCalculationTest.fs" />
     <Compile Include="ScoreResolverTest.fs" />
